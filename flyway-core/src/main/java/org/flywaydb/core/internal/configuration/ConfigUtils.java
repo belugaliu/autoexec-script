@@ -36,81 +36,81 @@ import static org.flywaydb.core.internal.sqlscript.SqlScriptMetadata.isMultiline
 @CustomLog
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ConfigUtils {
-    public static final String CONFIG_FILE_NAME = "flyway.conf";
-    public static final String CONFIG_FILES = "flyway.configFiles";
-    public static final String CONFIG_FILE_ENCODING = "flyway.configFileEncoding";
-    public static final String BASELINE_DESCRIPTION = "flyway.baselineDescription";
-    public static final String BASELINE_ON_MIGRATE = "flyway.baselineOnMigrate";
-    public static final String BASELINE_VERSION = "flyway.baselineVersion";
-    public static final String BATCH = "flyway.batch";
-    public static final String CALLBACKS = "flyway.callbacks";
-    public static final String CLEAN_DISABLED = "flyway.cleanDisabled";
-    public static final String CLEAN_ON_VALIDATION_ERROR = "flyway.cleanOnValidationError";
-    public static final String CONNECT_RETRIES = "flyway.connectRetries";
-    public static final String CONNECT_RETRIES_INTERVAL = "flyway.connectRetriesInterval";
-    public static final String DEFAULT_SCHEMA = "flyway.defaultSchema";
-    public static final String DRIVER = "flyway.driver";
-    public static final String DRYRUN_OUTPUT = "flyway.dryRunOutput";
-    public static final String ENCODING = "flyway.encoding";
-    public static final String DETECT_ENCODING = "flyway.detectEncoding";
-    public static final String ERROR_OVERRIDES = "flyway.errorOverrides";
-    public static final String GROUP = "flyway.group";
-    public static final String IGNORE_MIGRATION_PATTERNS = "flyway.ignoreMigrationPatterns";
-    public static final String INIT_SQL = "flyway.initSql";
-    public static final String INSTALLED_BY = "flyway.installedBy";
-    public static final String LICENSE_KEY = "flyway.licenseKey";
-    public static final String LOCATIONS = "flyway.locations";
-    public static final String MIXED = "flyway.mixed";
-    public static final String OUT_OF_ORDER = "flyway.outOfOrder";
-    public static final String SKIP_EXECUTING_MIGRATIONS = "flyway.skipExecutingMigrations";
-    public static final String OUTPUT_QUERY_RESULTS = "flyway.outputQueryResults";
-    public static final String PASSWORD = "flyway.password";
-    public static final String PLACEHOLDER_PREFIX = "flyway.placeholderPrefix";
-    public static final String PLACEHOLDER_REPLACEMENT = "flyway.placeholderReplacement";
-    public static final String PLACEHOLDER_SUFFIX = "flyway.placeholderSuffix";
-    public static final String PLACEHOLDER_SEPARATOR = "flyway.placeholderSeparator";
-    public static final String SCRIPT_PLACEHOLDER_PREFIX = "flyway.scriptPlaceholderPrefix";
-    public static final String SCRIPT_PLACEHOLDER_SUFFIX = "flyway.scriptPlaceholderSuffix";
-    public static final String PLACEHOLDERS_PROPERTY_PREFIX = "flyway.placeholders.";
-    public static final String LOCK_RETRY_COUNT = "flyway.lockRetryCount";
-    public static final String JDBC_PROPERTIES_PREFIX = "flyway.jdbcProperties.";
-    public static final String REPEATABLE_SQL_MIGRATION_PREFIX = "flyway.repeatableSqlMigrationPrefix";
-    public static final String RESOLVERS = "flyway.resolvers";
-    public static final String SCHEMAS = "flyway.schemas";
-    public static final String SKIP_DEFAULT_CALLBACKS = "flyway.skipDefaultCallbacks";
-    public static final String SKIP_DEFAULT_RESOLVERS = "flyway.skipDefaultResolvers";
-    public static final String SQL_MIGRATION_PREFIX = "flyway.sqlMigrationPrefix";
-    public static final String SQL_MIGRATION_SEPARATOR = "flyway.sqlMigrationSeparator";
-    public static final String SQL_MIGRATION_SUFFIXES = "flyway.sqlMigrationSuffixes";
-    public static final String STREAM = "flyway.stream";
-    public static final String TABLE = "flyway.table";
-    public static final String TABLESPACE = "flyway.tablespace";
-    public static final String TARGET = "flyway.target";
-    public static final String CHERRY_PICK = "flyway.cherryPick";
-    public static final String UNDO_SQL_MIGRATION_PREFIX = "flyway.undoSqlMigrationPrefix";
-    public static final String URL = "flyway.url";
-    public static final String USER = "flyway.user";
-    public static final String VALIDATE_ON_MIGRATE = "flyway.validateOnMigrate";
-    public static final String VALIDATE_MIGRATION_NAMING = "flyway.validateMigrationNaming";
-    public static final String CREATE_SCHEMAS = "flyway.createSchemas";
-    public static final String FAIL_ON_MISSING_LOCATIONS = "flyway.failOnMissingLocations";
-    public static final String LOGGERS = "flyway.loggers";
-    public static final String KERBEROS_CONFIG_FILE = "flyway.kerberosConfigFile";
+    public static final String CONFIG_FILE_NAME = "autoexec.conf";
+    public static final String CONFIG_FILES = "autoexec.configFiles";
+    public static final String CONFIG_FILE_ENCODING = "autoexec.configFileEncoding";
+    public static final String BASELINE_DESCRIPTION = "autoexec.baselineDescription";
+    public static final String BASELINE_ON_MIGRATE = "autoexec.baselineOnMigrate";
+    public static final String BASELINE_VERSION = "autoexec.baselineVersion";
+    public static final String BATCH = "autoexec.batch";
+    public static final String CALLBACKS = "autoexec.callbacks";
+    public static final String CLEAN_DISABLED = "autoexec.cleanDisabled";
+    public static final String CLEAN_ON_VALIDATION_ERROR = "autoexec.cleanOnValidationError";
+    public static final String CONNECT_RETRIES = "autoexec.connectRetries";
+    public static final String CONNECT_RETRIES_INTERVAL = "autoexec.connectRetriesInterval";
+    public static final String DEFAULT_SCHEMA = "autoexec.defaultSchema";
+    public static final String DRIVER = "autoexec.driver";
+    public static final String DRYRUN_OUTPUT = "autoexec.dryRunOutput";
+    public static final String ENCODING = "autoexec.encoding";
+    public static final String DETECT_ENCODING = "autoexec.detectEncoding";
+    public static final String ERROR_OVERRIDES = "autoexec.errorOverrides";
+    public static final String GROUP = "autoexec.group";
+    public static final String IGNORE_MIGRATION_PATTERNS = "autoexec.ignoreMigrationPatterns";
+    public static final String INIT_SQL = "autoexec.initSql";
+    public static final String INSTALLED_BY = "autoexec.installedBy";
+    public static final String LICENSE_KEY = "autoexec.licenseKey";
+    public static final String LOCATIONS = "autoexec.locations";
+    public static final String MIXED = "autoexec.mixed";
+    public static final String OUT_OF_ORDER = "autoexec.outOfOrder";
+    public static final String SKIP_EXECUTING_MIGRATIONS = "autoexec.skipExecutingMigrations";
+    public static final String OUTPUT_QUERY_RESULTS = "autoexec.outputQueryResults";
+    public static final String PASSWORD = "autoexec.password";
+    public static final String PLACEHOLDER_PREFIX = "autoexec.placeholderPrefix";
+    public static final String PLACEHOLDER_REPLACEMENT = "autoexec.placeholderReplacement";
+    public static final String PLACEHOLDER_SUFFIX = "autoexec.placeholderSuffix";
+    public static final String PLACEHOLDER_SEPARATOR = "autoexec.placeholderSeparator";
+    public static final String SCRIPT_PLACEHOLDER_PREFIX = "autoexec.scriptPlaceholderPrefix";
+    public static final String SCRIPT_PLACEHOLDER_SUFFIX = "autoexec.scriptPlaceholderSuffix";
+    public static final String PLACEHOLDERS_PROPERTY_PREFIX = "autoexec.placeholders.";
+    public static final String LOCK_RETRY_COUNT = "autoexec.lockRetryCount";
+    public static final String JDBC_PROPERTIES_PREFIX = "autoexec.jdbcProperties.";
+    public static final String REPEATABLE_SQL_MIGRATION_PREFIX = "autoexec.repeatableSqlMigrationPrefix";
+    public static final String RESOLVERS = "autoexec.resolvers";
+    public static final String SCHEMAS = "autoexec.schemas";
+    public static final String SKIP_DEFAULT_CALLBACKS = "autoexec.skipDefaultCallbacks";
+    public static final String SKIP_DEFAULT_RESOLVERS = "autoexec.skipDefaultResolvers";
+    public static final String SQL_MIGRATION_PREFIX = "autoexec.sqlMigrationPrefix";
+    public static final String SQL_MIGRATION_SEPARATOR = "autoexec.sqlMigrationSeparator";
+    public static final String SQL_MIGRATION_SUFFIXES = "autoexec.sqlMigrationSuffixes";
+    public static final String STREAM = "autoexec.stream";
+    public static final String TABLE = "autoexec.table";
+    public static final String TABLESPACE = "autoexec.tablespace";
+    public static final String TARGET = "autoexec.target";
+    public static final String CHERRY_PICK = "autoexec.cherryPick";
+    public static final String UNDO_SQL_MIGRATION_PREFIX = "autoexec.undoSqlMigrationPrefix";
+    public static final String URL = "autoexec.url";
+    public static final String USER = "autoexec.user";
+    public static final String VALIDATE_ON_MIGRATE = "autoexec.validateOnMigrate";
+    public static final String VALIDATE_MIGRATION_NAMING = "autoexec.validateMigrationNaming";
+    public static final String CREATE_SCHEMAS = "autoexec.createSchemas";
+    public static final String FAIL_ON_MISSING_LOCATIONS = "autoexec.failOnMissingLocations";
+    public static final String LOGGERS = "autoexec.loggers";
+    public static final String KERBEROS_CONFIG_FILE = "autoexec.kerberosConfigFile";
 
     // Oracle-specific
-    public static final String ORACLE_SQLPLUS = "flyway.oracle.sqlplus";
-    public static final String ORACLE_SQLPLUS_WARN = "flyway.oracle.sqlplusWarn";
-    public static final String ORACLE_KERBEROS_CACHE_FILE = "flyway.oracle.kerberosCacheFile";
-    public static final String ORACLE_WALLET_LOCATION = "flyway.oracle.walletLocation";
+    public static final String ORACLE_SQLPLUS = "autoexec.oracle.sqlplus";
+    public static final String ORACLE_SQLPLUS_WARN = "autoexec.oracle.sqlplusWarn";
+    public static final String ORACLE_KERBEROS_CACHE_FILE = "autoexec.oracle.kerberosCacheFile";
+    public static final String ORACLE_WALLET_LOCATION = "autoexec.oracle.walletLocation";
 
     // Command-line specific
-    public static final String JAR_DIRS = "flyway.jarDirs";
+    public static final String JAR_DIRS = "autoexec.jarDirs";
 
     // Gradle specific
-    public static final String CONFIGURATIONS = "flyway.configurations";
+    public static final String CONFIGURATIONS = "autoexec.configurations";
 
     // Plugin specific
-    public static final String FLYWAY_PLUGINS_PREFIX = "flyway.plugins.";
+    public static final String AUTOEXEC_PLUGINS_PREFIX = "autoexec.plugins.";
 
     /**
      * Converts Flyway-specific environment variables to their matching properties.
@@ -132,209 +132,209 @@ public class ConfigUtils {
     }
 
     private static String convertKey(String key) {
-        if ("FLYWAY_BASELINE_DESCRIPTION".equals(key)) {
+        if ("AUTOEXEC_BASELINE_DESCRIPTION".equals(key)) {
             return BASELINE_DESCRIPTION;
         }
-        if ("FLYWAY_BASELINE_ON_MIGRATE".equals(key)) {
+        if ("AUTOEXEC_BASELINE_ON_MIGRATE".equals(key)) {
             return BASELINE_ON_MIGRATE;
         }
-        if ("FLYWAY_BASELINE_VERSION".equals(key)) {
+        if ("AUTOEXEC_BASELINE_VERSION".equals(key)) {
             return BASELINE_VERSION;
         }
-        if ("FLYWAY_BATCH".equals(key)) {
+        if ("AUTOEXEC_BATCH".equals(key)) {
             return BATCH;
         }
-        if ("FLYWAY_CALLBACKS".equals(key)) {
+        if ("AUTOEXEC_CALLBACKS".equals(key)) {
             return CALLBACKS;
         }
-        if ("FLYWAY_CLEAN_DISABLED".equals(key)) {
+        if ("AUTOEXEC_CLEAN_DISABLED".equals(key)) {
             return CLEAN_DISABLED;
         }
-        if ("FLYWAY_CLEAN_ON_VALIDATION_ERROR".equals(key)) {
+        if ("AUTOEXEC_CLEAN_ON_VALIDATION_ERROR".equals(key)) {
             return CLEAN_ON_VALIDATION_ERROR;
         }
-        if ("FLYWAY_CONFIG_FILE_ENCODING".equals(key)) {
+        if ("AUTOEXEC_CONFIG_FILE_ENCODING".equals(key)) {
             return CONFIG_FILE_ENCODING;
         }
-        if ("FLYWAY_CONFIG_FILES".equals(key)) {
+        if ("AUTOEXEC_CONFIG_FILES".equals(key)) {
             return CONFIG_FILES;
         }
-        if ("FLYWAY_CONNECT_RETRIES".equals(key)) {
+        if ("AUTOEXEC_CONNECT_RETRIES".equals(key)) {
             return CONNECT_RETRIES;
         }
 
-        if ("FLYWAY_CONNECT_RETRIES_INTERVAL".equals(key)) {
+        if ("AUTOEXEC_CONNECT_RETRIES_INTERVAL".equals(key)) {
             return CONNECT_RETRIES_INTERVAL;
         }
 
-        if ("FLYWAY_DEFAULT_SCHEMA".equals(key)) {
+        if ("AUTOEXEC_DEFAULT_SCHEMA".equals(key)) {
             return DEFAULT_SCHEMA;
         }
-        if ("FLYWAY_DRIVER".equals(key)) {
+        if ("AUTOEXEC_DRIVER".equals(key)) {
             return DRIVER;
         }
-        if ("FLYWAY_DRYRUN_OUTPUT".equals(key)) {
+        if ("AUTOEXEC_DRYRUN_OUTPUT".equals(key)) {
             return DRYRUN_OUTPUT;
         }
-        if ("FLYWAY_ENCODING".equals(key)) {
+        if ("AUTOEXEC_ENCODING".equals(key)) {
             return ENCODING;
         }
-        if ("FLYWAY_DETECT_ENCODING".equals(key)) {
+        if ("AUTOEXEC_DETECT_ENCODING".equals(key)) {
             return DETECT_ENCODING;
         }
-        if ("FLYWAY_ERROR_OVERRIDES".equals(key)) {
+        if ("AUTOEXEC_ERROR_OVERRIDES".equals(key)) {
             return ERROR_OVERRIDES;
         }
-        if ("FLYWAY_GROUP".equals(key)) {
+        if ("AUTOEXEC_GROUP".equals(key)) {
             return GROUP;
         }
-        if ("FLYWAY_IGNORE_MIGRATION_PATTERNS".equals(key)) {
+        if ("AUTOEXEC_IGNORE_MIGRATION_PATTERNS".equals(key)) {
             return IGNORE_MIGRATION_PATTERNS;
         }
-        if ("FLYWAY_INIT_SQL".equals(key)) {
+        if ("AUTOEXEC_INIT_SQL".equals(key)) {
             return INIT_SQL;
         }
-        if ("FLYWAY_INSTALLED_BY".equals(key)) {
+        if ("AUTOEXEC_INSTALLED_BY".equals(key)) {
             return INSTALLED_BY;
         }
-        if ("FLYWAY_LICENSE_KEY".equals(key)) {
+        if ("AUTOEXEC_LICENSE_KEY".equals(key)) {
             return LICENSE_KEY;
         }
-        if ("FLYWAY_LOCATIONS".equals(key)) {
+        if ("AUTOEXEC_LOCATIONS".equals(key)) {
             return LOCATIONS;
         }
-        if ("FLYWAY_MIXED".equals(key)) {
+        if ("AUTOEXEC_MIXED".equals(key)) {
             return MIXED;
         }
-        if ("FLYWAY_OUT_OF_ORDER".equals(key)) {
+        if ("AUTOEXEC_OUT_OF_ORDER".equals(key)) {
             return OUT_OF_ORDER;
         }
-        if ("FLYWAY_SKIP_EXECUTING_MIGRATIONS".equals(key)) {
+        if ("AUTOEXEC_SKIP_EXECUTING_MIGRATIONS".equals(key)) {
             return SKIP_EXECUTING_MIGRATIONS;
         }
-        if ("FLYWAY_OUTPUT_QUERY_RESULTS".equals(key)) {
+        if ("AUTOEXEC_OUTPUT_QUERY_RESULTS".equals(key)) {
             return OUTPUT_QUERY_RESULTS;
         }
-        if ("FLYWAY_PASSWORD".equals(key)) {
+        if ("AUTOEXEC_PASSWORD".equals(key)) {
             return PASSWORD;
         }
-        if ("FLYWAY_LOCK_RETRY_COUNT".equals(key)) {
+        if ("AUTOEXEC_LOCK_RETRY_COUNT".equals(key)) {
             return LOCK_RETRY_COUNT;
         }
-        if ("FLYWAY_PLACEHOLDER_PREFIX".equals(key)) {
+        if ("AUTOEXEC_PLACEHOLDER_PREFIX".equals(key)) {
             return PLACEHOLDER_PREFIX;
         }
-        if ("FLYWAY_PLACEHOLDER_REPLACEMENT".equals(key)) {
+        if ("AUTOEXEC_PLACEHOLDER_REPLACEMENT".equals(key)) {
             return PLACEHOLDER_REPLACEMENT;
         }
-        if ("FLYWAY_PLACEHOLDER_SUFFIX".equals(key)) {
+        if ("AUTOEXEC_PLACEHOLDER_SUFFIX".equals(key)) {
             return PLACEHOLDER_SUFFIX;
         }
-        if ("FLYWAY_PLACEHOLDER_SEPARATOR".equals(key)) {
+        if ("AUTOEXEC_PLACEHOLDER_SEPARATOR".equals(key)) {
             return PLACEHOLDER_SEPARATOR;
         }
-        if ("FLYWAY_SCRIPT_PLACEHOLDER_PREFIX".equals(key)) {
+        if ("AUTOEXEC_SCRIPT_PLACEHOLDER_PREFIX".equals(key)) {
             return SCRIPT_PLACEHOLDER_PREFIX;
         }
-        if ("FLYWAY_SCRIPT_PLACEHOLDER_SUFFIX".equals(key)) {
+        if ("AUTOEXEC_SCRIPT_PLACEHOLDER_SUFFIX".equals(key)) {
             return SCRIPT_PLACEHOLDER_SUFFIX;
         }
-        if (key.matches("FLYWAY_PLACEHOLDERS_.+")) {
-            return PLACEHOLDERS_PROPERTY_PREFIX + key.substring("FLYWAY_PLACEHOLDERS_".length()).toLowerCase(Locale.ENGLISH);
+        if (key.matches("AUTOEXEC_PLACEHOLDERS_.+")) {
+            return PLACEHOLDERS_PROPERTY_PREFIX + key.substring("AUTOEXEC_PLACEHOLDERS_".length()).toLowerCase(Locale.ENGLISH);
         }
 
-        if (key.matches("FLYWAY_JDBC_PROPERTIES_.+")) {
-            return JDBC_PROPERTIES_PREFIX + key.substring("FLYWAY_JDBC_PROPERTIES_".length());
+        if (key.matches("AUTOEXEC_JDBC_PROPERTIES_.+")) {
+            return JDBC_PROPERTIES_PREFIX + key.substring("AUTOEXEC_JDBC_PROPERTIES_".length());
         }
 
-        if ("FLYWAY_REPEATABLE_SQL_MIGRATION_PREFIX".equals(key)) {
+        if ("AUTOEXEC_REPEATABLE_SQL_MIGRATION_PREFIX".equals(key)) {
             return REPEATABLE_SQL_MIGRATION_PREFIX;
         }
-        if ("FLYWAY_RESOLVERS".equals(key)) {
+        if ("AUTOEXEC_RESOLVERS".equals(key)) {
             return RESOLVERS;
         }
-        if ("FLYWAY_SCHEMAS".equals(key)) {
+        if ("AUTOEXEC_SCHEMAS".equals(key)) {
             return SCHEMAS;
         }
-        if ("FLYWAY_SKIP_DEFAULT_CALLBACKS".equals(key)) {
+        if ("AUTOEXEC_SKIP_DEFAULT_CALLBACKS".equals(key)) {
             return SKIP_DEFAULT_CALLBACKS;
         }
-        if ("FLYWAY_SKIP_DEFAULT_RESOLVERS".equals(key)) {
+        if ("AUTOEXEC_SKIP_DEFAULT_RESOLVERS".equals(key)) {
             return SKIP_DEFAULT_RESOLVERS;
         }
-        if ("FLYWAY_SQL_MIGRATION_PREFIX".equals(key)) {
+        if ("AUTOEXEC_SQL_MIGRATION_PREFIX".equals(key)) {
             return SQL_MIGRATION_PREFIX;
         }
-        if ("FLYWAY_SQL_MIGRATION_SEPARATOR".equals(key)) {
+        if ("AUTOEXEC_SQL_MIGRATION_SEPARATOR".equals(key)) {
             return SQL_MIGRATION_SEPARATOR;
         }
-        if ("FLYWAY_SQL_MIGRATION_SUFFIXES".equals(key)) {
+        if ("AUTOEXEC_SQL_MIGRATION_SUFFIXES".equals(key)) {
             return SQL_MIGRATION_SUFFIXES;
         }
-        if ("FLYWAY_STREAM".equals(key)) {
+        if ("AUTOEXEC_STREAM".equals(key)) {
             return STREAM;
         }
-        if ("FLYWAY_TABLE".equals(key)) {
+        if ("AUTOEXEC_TABLE".equals(key)) {
             return TABLE;
         }
-        if ("FLYWAY_TABLESPACE".equals(key)) {
+        if ("AUTOEXEC_TABLESPACE".equals(key)) {
             return TABLESPACE;
         }
-        if ("FLYWAY_TARGET".equals(key)) {
+        if ("AUTOEXEC_TARGET".equals(key)) {
             return TARGET;
         }
-        if ("FLYWAY_CHERRY_PICK".equals(key)) {
+        if ("AUTOEXEC_CHERRY_PICK".equals(key)) {
             return CHERRY_PICK;
         }
-        if ("FLYWAY_LOGGERS".equals(key)) {
+        if ("AUTOEXEC_LOGGERS".equals(key)) {
             return LOGGERS;
         }
-        if ("FLYWAY_UNDO_SQL_MIGRATION_PREFIX".equals(key)) {
+        if ("AUTOEXEC_UNDO_SQL_MIGRATION_PREFIX".equals(key)) {
             return UNDO_SQL_MIGRATION_PREFIX;
         }
-        if ("FLYWAY_URL".equals(key)) {
+        if ("AUTOEXEC_URL".equals(key)) {
             return URL;
         }
-        if ("FLYWAY_USER".equals(key)) {
+        if ("AUTOEXEC_USER".equals(key)) {
             return USER;
         }
-        if ("FLYWAY_VALIDATE_ON_MIGRATE".equals(key)) {
+        if ("AUTOEXEC_VALIDATE_ON_MIGRATE".equals(key)) {
             return VALIDATE_ON_MIGRATE;
         }
-        if ("FLYWAY_VALIDATE_MIGRATION_NAMING".equals(key)) {
+        if ("AUTOEXEC_VALIDATE_MIGRATION_NAMING".equals(key)) {
             return VALIDATE_MIGRATION_NAMING;
         }
-        if ("FLYWAY_CREATE_SCHEMAS".equals(key)) {
+        if ("AUTOEXEC_CREATE_SCHEMAS".equals(key)) {
             return CREATE_SCHEMAS;
         }
-        if ("FLYWAY_FAIL_ON_MISSING_LOCATIONS".equals(key)) {
+        if ("AUTOEXEC_FAIL_ON_MISSING_LOCATIONS".equals(key)) {
             return FAIL_ON_MISSING_LOCATIONS;
         }
-        if ("FLYWAY_KERBEROS_CONFIG_FILE".equals(key)) {
+        if ("AUTOEXEC_KERBEROS_CONFIG_FILE".equals(key)) {
             return KERBEROS_CONFIG_FILE;
         }
 
         // Oracle-specific
-        if ("FLYWAY_ORACLE_SQLPLUS".equals(key)) {
+        if ("AUTOEXEC_ORACLE_SQLPLUS".equals(key)) {
             return ORACLE_SQLPLUS;
         }
-        if ("FLYWAY_ORACLE_SQLPLUS_WARN".equals(key)) {
+        if ("AUTOEXEC_ORACLE_SQLPLUS_WARN".equals(key)) {
             return ORACLE_SQLPLUS_WARN;
         }
-        if ("FLYWAY_ORACLE_KERBEROS_CACHE_FILE".equals(key)) {
+        if ("AUTOEXEC_ORACLE_KERBEROS_CACHE_FILE".equals(key)) {
             return ORACLE_KERBEROS_CACHE_FILE;
         }
-        if ("FLYWAY_ORACLE_WALLET_LOCATION".equals(key)) {
+        if ("AUTOEXEC_ORACLE_WALLET_LOCATION".equals(key)) {
             return ORACLE_WALLET_LOCATION;
         }
 
         // Command-line specific
-        if ("FLYWAY_JAR_DIRS".equals(key)) {
+        if ("AUTOEXEC_JAR_DIRS".equals(key)) {
             return JAR_DIRS;
         }
 
         // Gradle specific
-        if ("FLYWAY_CONFIGURATIONS".equals(key)) {
+        if ("AUTOEXEC_CONFIGURATIONS".equals(key)) {
             return CONFIGURATIONS;
         }
 
@@ -350,9 +350,9 @@ public class ConfigUtils {
 
     /**
      * Load configuration files from the default locations:
-     * $installationDir$/conf/flyway.conf
-     * $user.home$/flyway.conf
-     * $workingDirectory$/flyway.conf
+     * $installationDir$/conf/autoexec.conf
+     * $user.home$/autoexec.conf
+     * $workingDirectory$/autoexec.conf
      *
      * @param encoding The conf file encoding.
      * @throws FlywayException When the configuration failed.
@@ -464,7 +464,7 @@ public class ConfigUtils {
                     boolean restoreMultilineDelimiter = false;
                     if (nextLine.isEmpty()) {
                         // blank line
-                    } else if (nextLine.trim().startsWith("flyway.") && nextLine.contains("=")) {
+                    } else if (nextLine.trim().startsWith("autoexec.") && nextLine.contains("=")) {
                         if (isMultilineBooleanExpression(nextLine)) {
                             // next line is an extension of a boolean expression
                             restoreMultilineDelimiter = true;
@@ -617,7 +617,7 @@ public class ConfigUtils {
     public static void checkConfigurationForUnrecognisedProperties(Map<String, String> config, String prefix) {
         ArrayList<String> unknownFlywayProperties = new ArrayList<>();
         for (String key : config.keySet()) {
-            if (prefix == null || (key.startsWith(prefix) && !key.startsWith(FLYWAY_PLUGINS_PREFIX))) {
+            if (prefix == null || (key.startsWith(prefix) && !key.startsWith(AUTOEXEC_PLUGINS_PREFIX))) {
                 unknownFlywayProperties.add(key);
             }
         }

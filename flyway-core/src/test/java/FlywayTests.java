@@ -22,7 +22,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * flyway unit test. except for base flyway functions, for example:<br>
@@ -182,7 +181,7 @@ public class FlywayTests {
 
     private Flyway init() {
         FluentConfiguration configuration = new FluentConfiguration();
-        String filePath = this.getClass().getClassLoader().getResource("conf/flyway.conf").getFile();
+        String filePath = this.getClass().getClassLoader().getResource("conf/autoexec.conf").getFile();
         Map<String, String> configMap = ConfigUtils.loadDefaultConfigurationFiles(
                 new File(filePath).getParentFile().getParentFile(),
                 StandardCharsets.UTF_8.name());
