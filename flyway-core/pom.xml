@@ -26,6 +26,10 @@
     <artifactId>flyway-core</artifactId>
     <packaging>jar</packaging>
     <name>${project.artifactId}</name>
+    <properties>
+        <version.h2>2.1.214</version.h2>
+        <version.junit>5.9.0-M1</version.junit>
+    </properties>
     <dependencies>
         <!-- Optional loggers -->
         <dependency>
@@ -84,6 +88,24 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${version.h2}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${version.junit}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${version.junit}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -93,6 +115,14 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
+        <testResources>
+            <testResource>
+                <directory>src/test/java</directory>
+            </testResource>
+            <testResource>
+                <directory>src/test/resources</directory>
+            </testResource>
+        </testResources>
         <plugins>
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>

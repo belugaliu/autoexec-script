@@ -17,10 +17,7 @@ package org.flywaydb.core.internal.info;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.flywaydb.core.api.CoreMigrationType;
-import org.flywaydb.core.api.MigrationInfo;
-import org.flywaydb.core.api.MigrationState;
-import org.flywaydb.core.api.MigrationVersion;
+import org.flywaydb.core.api.*;
 import org.flywaydb.core.internal.util.AsciiTable;
 import org.flywaydb.core.internal.util.DateUtils;
 
@@ -56,7 +53,8 @@ public class MigrationInfoDumper {
                     getCategory(migrationInfo),
                     getVersionStr(migrationInfo),
                     migrationInfo.getDescription(),
-                    migrationInfo.getType().name(),
+                    // for custom script type -- liull
+                    MigrationTypeUtil.name(migrationInfo.getType()),
                     DateUtils.formatDateAsIsoString(migrationInfo.getInstalledOn()),
                     migrationInfo.getState().getDisplayName()
 

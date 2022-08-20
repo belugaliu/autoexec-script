@@ -53,4 +53,18 @@ public interface MigrationResolver extends Plugin {
     default MigrationType getDefaultMigrationType() {
         return null;
     }
+
+    /**
+     * set configuration for resolvedMigration resource collect.
+     * @param configuration the flyway configuration.
+     * @author liulili
+     */
+    default void setConfiguration(Configuration configuration) {}
+
+    /**
+     * set ResourceProvider for resolvedMigration resource collect.
+     * @param resourceProvider the flyway resourceProvider.
+     * @author liulili
+     */
+    default void setResourceProvider(ResourceProvider resourceProvider) {}
 }

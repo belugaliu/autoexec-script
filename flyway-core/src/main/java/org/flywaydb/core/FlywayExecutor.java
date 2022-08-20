@@ -15,6 +15,7 @@
  */
 package org.flywaydb.core;
 
+import com.amazonaws.util.CollectionUtils;
 import lombok.CustomLog;
 import org.flywaydb.core.api.ClassProvider;
 import org.flywaydb.core.api.ResourceProvider;
@@ -51,7 +52,6 @@ import org.flywaydb.core.internal.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.flywaydb.core.internal.util.DataUnits.MEGABYTE;
@@ -188,10 +188,6 @@ public class FlywayExecutor {
 
             database.ensureSupported();
 
-            DefaultCallbackExecutor callbackExecutor = new DefaultCallbackExecutor(configuration, database, defaultSchema, prepareCallbacks(
-                    database, resourceProvider, jdbcConnectionFactory, sqlScriptFactory, statementInterceptor, defaultSchema, parsingContext));
-
-            SqlScriptExecutorFactory sqlScriptExecutorFactory = databaseType.createSqlScriptExecutorFactory(jdbcConnectionFactory, callbackExecutor, statementInterceptor);
 
             SchemaHistory schemaHistory = SchemaHistoryFactory.getSchemaHistory(
                     configuration,
@@ -200,6 +196,10 @@ public class FlywayExecutor {
                     database,
                     defaultSchema,
                     statementInterceptor);
+            DefaultCallbackExecutor callbackExecutor = new DefaultCallbackExecutor(configuration, database, defaultSchema,
+                    prepareCallbacks(database, resourceProvider, jdbcConnectionFactory, sqlScriptFactory,
+                            statementInterceptor, defaultSchema, parsingContext, schemaHistory, classProvider));
+            SqlScriptExecutorFactory sqlScriptExecutorFactory = databaseType.createSqlScriptExecutorFactory(jdbcConnectionFactory, callbackExecutor, statementInterceptor);
 
             result = command.execute(
                     createMigrationResolver(resourceProvider, classProvider, sqlScriptExecutorFactory, sqlScriptFactory, parsingContext, statementInterceptor),
@@ -267,7 +267,8 @@ public class FlywayExecutor {
     private List<Callback> prepareCallbacks(Database database, ResourceProvider resourceProvider,
                                             JdbcConnectionFactory jdbcConnectionFactory,
                                             SqlScriptFactory sqlScriptFactory, StatementInterceptor statementInterceptor,
-                                            Schema schema, ParsingContext parsingContext) {
+                                            Schema schema, ParsingContext parsingContext,  SchemaHistory schemaHistory,
+                                            ClassProvider classProvider) {
         List<Callback> effectiveCallbacks = new ArrayList<>();
         CallbackExecutor callbackExecutor = NoopCallbackExecutor.INSTANCE;
 
@@ -284,10 +285,20 @@ public class FlywayExecutor {
 
 
 
-
-        effectiveCallbacks.addAll(Arrays.asList(configuration.getCallbacks()));
-
-
+        // modify by liull 2022-08-20 for republicCallback need select database db and compare resolve migration.
+        List<Callback> customCallbacks = Arrays.asList(configuration.getCallbacks());
+        SqlScriptExecutorFactory sqlScriptExecutorFactory = jdbcConnectionFactory.getDatabaseType()
+                .createSqlScriptExecutorFactory(jdbcConnectionFactory, callbackExecutor, statementInterceptor);
+        CompositeMigrationResolver migrationResolver = createMigrationResolver(resourceProvider, classProvider,
+                sqlScriptExecutorFactory, sqlScriptFactory, parsingContext, statementInterceptor);
+        if (!CollectionUtils.isNullOrEmpty(customCallbacks)) {
+            customCallbacks.forEach(callback -> {
+                callback.setDatabase(database);
+                callback.setMigrationResolver(migrationResolver);
+                callback.setSchemaHistory(schemaHistory);
+            });
+            effectiveCallbacks.addAll(customCallbacks);
+        }
 
 
 
@@ -295,10 +306,9 @@ public class FlywayExecutor {
 
 
         if (!configuration.isSkipDefaultCallbacks()) {
-            SqlScriptExecutorFactory sqlScriptExecutorFactory = jdbcConnectionFactory.getDatabaseType().createSqlScriptExecutorFactory(
-                    jdbcConnectionFactory, callbackExecutor, statementInterceptor);
-
             effectiveCallbacks.addAll(new SqlScriptCallbackFactory(resourceProvider, sqlScriptExecutorFactory, sqlScriptFactory, configuration).getCallbacks());
+            effectiveCallbacks.add(RePublishScriptCallback.builder().database(database)
+                    .migrationResolver(migrationResolver).schemaHistory(schemaHistory).build());
         }
 
 

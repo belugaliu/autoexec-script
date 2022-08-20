@@ -15,6 +15,10 @@
  */
 package org.flywaydb.core.api.callback;
 
+import org.flywaydb.core.internal.database.base.Database;
+import org.flywaydb.core.internal.resolver.CompositeMigrationResolver;
+import org.flywaydb.core.internal.schemahistory.SchemaHistory;
+
 /**
  * This is the main callback interface that should be implemented to handle Flyway lifecycle events.
  */
@@ -57,4 +61,31 @@ public interface Callback {
      * @return The callback name
      */
     String getCallbackName();
+
+
+    /**
+     * set database for callback may use in handle.
+     * @param database the database when callback use.
+     * @author liulili
+     */
+    default void setDatabase(Database database) {
+        // empty method
+    }
+
+    /**
+     * set migrationResolver instance for handle may use.
+     * @param migrationResolver the migrationResolver in FlywayExecutor#createMigrationResolver
+     * @author liulili
+     */
+    default void setMigrationResolver(CompositeMigrationResolver migrationResolver) {
+        // empty method
+    }
+    /**
+     * set schemaHistory instance for handle may use.
+     * @param schemaHistory the schemaHistory in SchemaHistoryFactory#getSchemaHistory
+     * @author liulili
+     */
+    default void setSchemaHistory(SchemaHistory schemaHistory) {
+        // empty method
+    }
 }

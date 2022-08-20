@@ -88,8 +88,16 @@ public class PostgreSQLAdvisoryLockTemplate {
                                        "Configure the number of retries with the 'lockRetryCount' configuration option: " + FlywayDbWebsiteLinks.LOCK_RETRY_COUNT);
     }
 
+    /**
+     * Because both uxdb and kingbase databases are based on postgreSQL for secondary development,
+     * the syntax is slightly incompatible, resulting in the first result here,
+     * and the column name pg_try_advisory_xact_lock cannot be used
+     * @return lock success or not.
+     * @throws SQLException for execute SQL
+     * @author liull
+     */
     private boolean tryLockTransactional() throws SQLException {
-        List<Boolean> results = jdbcTemplate.query("SELECT pg_try_advisory_xact_lock(" + lockNum + ")", rs -> rs.getBoolean("pg_try_advisory_xact_lock"));
+        List<Boolean> results = jdbcTemplate.query("SELECT pg_try_advisory_xact_lock(" + lockNum + ")", rs -> rs.getBoolean(1));
         return results.size() == 1 && results.get(0);
     }
 

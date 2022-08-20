@@ -69,8 +69,12 @@ public class CompositeMigrationResolver implements MigrationResolver {
 
 
         }
-
+        // attributes required in custom script parsing at resolver implements. --liulili
         migrationResolvers.add(new FixedJavaMigrationResolver(configuration.getJavaMigrations()));
+        Arrays.stream(customMigrationResolvers).forEach(customMigrationResolver -> {
+            customMigrationResolver.setConfiguration(configuration);
+            customMigrationResolver.setResourceProvider(resourceProvider);
+        });
         migrationResolvers.addAll(Arrays.asList(customMigrationResolvers));
     }
 

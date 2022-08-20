@@ -15,36 +15,36 @@
  */
 package org.flywaydb.core.internal.resolver;
 
+import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.resolver.ResolvedMigration;
+import org.flywaydb.core.extensibility.MigrationType;
 
 import java.util.Comparator;
 
 public class ResolvedMigrationComparator implements Comparator<ResolvedMigration> {
+    /**
+     * change compare by type，version and script three attribute.
+     * @param o1 the first object to be compared.
+     * @param o2 the second object to be compared.
+     * @return compare result. -1 o1 smaller than o2, 0 equals,1 o1 bigger than o2
+     * @author liull
+     */
     @Override
     public int compare(ResolvedMigration o1, ResolvedMigration o2) {
-        if ((o1.getVersion() != null) && o2.getVersion() != null) {
-            int v = o1.getVersion().compareTo(o2.getVersion());
-
-
-
-
-
-
-
-
-
-
-
-
-
-            return v;
+        MigrationVersion o1Version = o1.getVersion();
+        MigrationVersion o2Version = o2.getVersion();
+        MigrationType o1MgrationType = o1.getType();
+        MigrationType o2MigrationType = o2.getType();
+        if (o1MgrationType != o2MigrationType) {
+            return o1MgrationType.toString().compareTo(o2MigrationType.toString());
         }
-        if (o1.getVersion() != null) {
+        if (o1Version == null) {
             return -1;
         }
-        if (o2.getVersion() != null) {
-            return 1;
+        int vc = o1Version.compareTo(o2Version);
+        if (vc != 0) {
+            return vc;
         }
-        return o1.getDescription().compareTo(o2.getDescription());
+        return o1.getScript().compareTo(o2.getScript());
     }
 }

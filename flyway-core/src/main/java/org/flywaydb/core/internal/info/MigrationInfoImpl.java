@@ -15,6 +15,7 @@
  */
 package org.flywaydb.core.internal.info;
 
+import com.amazonaws.util.StringUtils;
 import org.flywaydb.core.api.*;
 import org.flywaydb.core.api.resolver.ResolvedMigration;
 import org.flywaydb.core.extensibility.AppliedMigration;
@@ -373,8 +374,12 @@ public class MigrationInfoImpl implements MigrationInfo {
         if (o.getInstalledRank() != null) {
             return 1;
         }
-
-        return compareVersion(o);
+        // liull:In order to realize the requirement of multiple scripts in one version, the script name comparison is added here.
+        int compare = compareVersion(o);
+        if (compare == 0) {
+            return StringUtils.compare(this.getScript(), o.getScript());
+        }
+        return compare;
     }
 
     @Override
