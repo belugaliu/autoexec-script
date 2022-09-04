@@ -21,7 +21,6 @@ import lombok.NoArgsConstructor;
 import org.flywaydb.core.extensibility.MigrationType;
 
 import java.text.MessageFormat;
-import java.util.ServiceLoader;
 
 /**
  *  enum implements MigrationType. now suppport:

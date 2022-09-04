@@ -21,6 +21,7 @@ import org.flywaydb.core.api.configuration.Configuration;
 import org.flywaydb.core.extensibility.MigrationType;
 import org.flywaydb.core.extensibility.Plugin;
 import org.flywaydb.core.internal.jdbc.StatementInterceptor;
+import org.flywaydb.core.internal.parser.ParsingContext;
 import org.flywaydb.core.internal.sqlscript.SqlScriptExecutorFactory;
 import org.flywaydb.core.internal.sqlscript.SqlScriptFactory;
 
@@ -39,6 +40,7 @@ public interface MigrationResolver extends Plugin {
         public final SqlScriptFactory sqlScriptFactory;
         public final SqlScriptExecutorFactory sqlScriptExecutorFactory;
         public final StatementInterceptor statementInterceptor;
+        public final ParsingContext parsingContext;
     }
 
     Collection<ResolvedMigration> resolveMigrations(Context context);
@@ -54,17 +56,4 @@ public interface MigrationResolver extends Plugin {
         return null;
     }
 
-    /**
-     * set configuration for resolvedMigration resource collect.
-     * @param configuration the flyway configuration.
-     * @author liulili
-     */
-    default void setConfiguration(Configuration configuration) {}
-
-    /**
-     * set ResourceProvider for resolvedMigration resource collect.
-     * @param resourceProvider the flyway resourceProvider.
-     * @author liulili
-     */
-    default void setResourceProvider(ResourceProvider resourceProvider) {}
 }

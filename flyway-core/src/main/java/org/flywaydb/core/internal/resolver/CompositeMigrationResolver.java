@@ -46,6 +46,8 @@ public class CompositeMigrationResolver implements MigrationResolver {
     private final StatementInterceptor statementInterceptor;
     private List<ResolvedMigration> availableMigrations;
 
+    private final ParsingContext parsingContext;
+
     public CompositeMigrationResolver(ResourceProvider resourceProvider,
                                       ClassProvider<JavaMigration> classProvider,
                                       Configuration configuration,
@@ -58,6 +60,7 @@ public class CompositeMigrationResolver implements MigrationResolver {
         this.sqlScriptFactory = sqlScriptFactory;
         this.sqlScriptExecutorFactory = sqlScriptExecutorFactory;
         this.statementInterceptor = statementInterceptor;
+        this.parsingContext = parsingContext;
 
         if (!configuration.isSkipDefaultResolvers()) {
             migrationResolvers.add(new SqlMigrationResolver(resourceProvider, sqlScriptExecutorFactory, sqlScriptFactory, configuration, parsingContext));
@@ -69,12 +72,7 @@ public class CompositeMigrationResolver implements MigrationResolver {
 
 
         }
-        // attributes required in custom script parsing at resolver implements. --liulili
         migrationResolvers.add(new FixedJavaMigrationResolver(configuration.getJavaMigrations()));
-        Arrays.stream(customMigrationResolvers).forEach(customMigrationResolver -> {
-            customMigrationResolver.setConfiguration(configuration);
-            customMigrationResolver.setResourceProvider(resourceProvider);
-        });
         migrationResolvers.addAll(Arrays.asList(customMigrationResolvers));
     }
 
@@ -114,7 +112,8 @@ public class CompositeMigrationResolver implements MigrationResolver {
     }
 
     public Collection<ResolvedMigration> resolveMigrations(Configuration configuration) {
-        return resolveMigrations(new Context(configuration, resourceProvider, sqlScriptFactory, sqlScriptExecutorFactory, statementInterceptor));
+        return resolveMigrations(new Context(configuration, resourceProvider, sqlScriptFactory,
+                sqlScriptExecutorFactory, statementInterceptor, parsingContext));
     }
 
     private List<ResolvedMigration> doFindAvailableMigrations(Context context) throws FlywayException {
