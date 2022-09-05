@@ -49,7 +49,7 @@ public class CoreResourceTypeProvider implements ResourceTypeProvider {
     public List<Pair<String, ResourceType>> getPrefixTypePairs(Configuration configuration) {
         List<Pair<String, ResourceType>> pairs = new ArrayList<>();
         pairs.add(Pair.of(configuration.getSqlMigrationPrefix(), CoreResourceType.MIGRATION));
-
+        pairs.add(Pair.of(configuration.getOSqlMigrationPrefix(), CoreResourceType.MIGRATION));
 
 
         pairs.add(Pair.of(configuration.getRepeatableSqlMigrationPrefix(), CoreResourceType.REPEATABLE_MIGRATION));

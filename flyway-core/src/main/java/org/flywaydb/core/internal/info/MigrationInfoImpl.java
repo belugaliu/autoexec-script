@@ -27,7 +27,6 @@ import org.flywaydb.core.internal.util.AbbreviationUtils;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Objects;
-import java.util.stream.IntStream;
 
 public class MigrationInfoImpl implements MigrationInfo {
     private final ResolvedMigration resolvedMigration;
@@ -282,7 +281,7 @@ public class MigrationInfoImpl implements MigrationInfo {
 
 
         ) {
-            String migrationIdentifier = appliedMigration.getVersion() == null ? appliedMigration.getScript() : "version " + appliedMigration.getVersion();
+            String migrationIdentifier = appliedMigration.getScript();
             if (getVersion() == null || getVersion().compareTo(context.appliedBaseline) > 0) {
                 if (resolvedMigration.getType() != appliedMigration.getType()) {
                     String mismatchMessage = createMismatchMessage("type", migrationIdentifier, appliedMigration.getType(), resolvedMigration.getType());

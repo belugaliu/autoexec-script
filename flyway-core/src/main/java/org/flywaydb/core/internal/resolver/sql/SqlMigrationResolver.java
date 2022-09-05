@@ -23,7 +23,6 @@ import org.flywaydb.core.api.configuration.Configuration;
 import org.flywaydb.core.api.resolver.MigrationResolver;
 import org.flywaydb.core.api.resolver.ResolvedMigration;
 import org.flywaydb.core.api.resource.LoadableResource;
-import org.flywaydb.core.api.resource.Resource;
 import org.flywaydb.core.internal.parser.ParsingContext;
 import org.flywaydb.core.internal.parser.PlaceholderReplacingReader;
 import org.flywaydb.core.internal.resolver.ChecksumCalculator;
@@ -38,9 +37,6 @@ import org.flywaydb.core.internal.sqlscript.SqlScriptFactory;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 /**
  * Migration resolver for SQL files on the classpath. The SQL files must have names like
@@ -83,7 +79,7 @@ public class SqlMigrationResolver implements MigrationResolver {
 
 
                      );
-
+        addMigrations(migrations, configuration.getOSqlMigrationPrefix(), suffixes, false);
         migrations.sort(new ResolvedMigrationComparator());
         return migrations;
     }
@@ -134,7 +130,7 @@ public class SqlMigrationResolver implements MigrationResolver {
         return null;
     }
 
-    private void addMigrations(List<ResolvedMigration> migrations, String prefix, String[] suffixes,
+    protected void addMigrations(List<ResolvedMigration> migrations, String prefix, String[] suffixes,
                                boolean repeatable
 
 

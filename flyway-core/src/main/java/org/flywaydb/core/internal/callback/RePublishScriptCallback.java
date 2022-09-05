@@ -102,7 +102,9 @@ public class RePublishScriptCallback extends BaseCallback {
 
         checksumMigrationInfos.stream()
                 .filter(migrationInfoImpl ->
-                        !Objects.equals(migrationInfoImpl.getAppliedMigration().getChecksum(), migrationInfoImpl.getResolvedMigration().getChecksum())
+                        !Objects.equals(migrationInfoImpl.getAppliedMigration().getChecksum(),
+                                migrationInfoImpl.getResolvedMigration().getChecksum())
+                                && !migrationInfoImpl.getAppliedMigration().getScript().startsWith(configuration.getOSqlMigrationPrefix())
                                 && migrationInfoImpl.getAppliedMigration().getType() != CoreMigrationType.DELETE)
                 .forEach(migrationInfoImpl -> {
                     schemaHistory.delete(migrationInfoImpl.getAppliedMigration());

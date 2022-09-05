@@ -80,6 +80,8 @@ public class ConfigUtils {
     public static final String SKIP_DEFAULT_CALLBACKS = "autoexec.skipDefaultCallbacks";
     public static final String SKIP_DEFAULT_RESOLVERS = "autoexec.skipDefaultResolvers";
     public static final String SQL_MIGRATION_PREFIX = "autoexec.sqlMigrationPrefix";
+
+    public static final String OSQL_MIGRATION_PREFIX = "autoexec.oSqlMigrationPrefix";
     public static final String SQL_MIGRATION_SEPARATOR = "autoexec.sqlMigrationSeparator";
     public static final String SQL_MIGRATION_SUFFIXES = "autoexec.sqlMigrationSuffixes";
     public static final String STREAM = "autoexec.stream";

@@ -166,6 +166,7 @@ public class ClassicConfiguration implements Configuration {
     private String scriptPlaceholderPrefix = "FP__";
     private String scriptPlaceholderSuffix = "__";
     private String sqlMigrationPrefix = "V";
+    private String oSqlMigrationPrefix = "X";
     private String undoSqlMigrationPrefix = "U";
     /**
      * -- SETTER --
@@ -769,6 +770,7 @@ public class ClassicConfiguration implements Configuration {
         this.sqlMigrationPrefix = sqlMigrationPrefix;
     }
 
+    public void setOSqlMigrationPrefix(String oSqlMigrationPrefix) { this.oSqlMigrationPrefix = oSqlMigrationPrefix;}
     /**
      * Sets the file name prefix for undo SQL migrations. (default: U)
      * Undo SQL migrations are responsible for undoing the effects of the versioned migration with the same version.</p>
@@ -1222,6 +1224,7 @@ public class ClassicConfiguration implements Configuration {
         setSkipDefaultCallbacks(configuration.isSkipDefaultCallbacks());
         setSkipDefaultResolvers(configuration.isSkipDefaultResolvers());
         setSqlMigrationPrefix(configuration.getSqlMigrationPrefix());
+        setOSqlMigrationPrefix(configuration.getOSqlMigrationPrefix());
         setSqlMigrationSeparator(configuration.getSqlMigrationSeparator());
         setSqlMigrationSuffixes(configuration.getSqlMigrationSuffixes());
         setTable(configuration.getTable());
@@ -1335,6 +1338,10 @@ public class ClassicConfiguration implements Configuration {
         String sqlMigrationPrefixProp = props.remove(ConfigUtils.SQL_MIGRATION_PREFIX);
         if (sqlMigrationPrefixProp != null) {
             setSqlMigrationPrefix(sqlMigrationPrefixProp);
+        }
+        String oSqlMigrationPrefixProp = props.remove(ConfigUtils.OSQL_MIGRATION_PREFIX);
+        if (oSqlMigrationPrefixProp != null) {
+            setOSqlMigrationPrefix(oSqlMigrationPrefix);
         }
         String undoSqlMigrationPrefixProp = props.remove(ConfigUtils.UNDO_SQL_MIGRATION_PREFIX);
         if (undoSqlMigrationPrefixProp != null) {

@@ -142,6 +142,14 @@ public interface Configuration {
      * @return The file name prefix for sql migrations. (default: V)
      */
     String getSqlMigrationPrefix();
+    /**
+     * The file name prefix for versioned SQL migrations.
+     * Versioned SQL migrations have the following file name structure: prefixVERSIONseparatorDESCRIPTIONsuffix,
+     * which using the defaults translates to V1.1__My_description.sql
+     *
+     * @return The file name prefix for sql migrations. (default: OV)
+     */
+    String getOSqlMigrationPrefix();
 
     /**
      * The file name prefix for undo SQL migrations.

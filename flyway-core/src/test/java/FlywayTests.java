@@ -8,11 +8,13 @@ import org.flywaydb.core.internal.configuration.ConfigUtils;
 import org.flywaydb.core.internal.scanner.LocationScannerCache;
 import org.flywaydb.core.internal.scanner.ResourceNameCache;
 import org.flywaydb.core.internal.scanner.Scanner;
+import org.h2.util.IOUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -36,7 +38,8 @@ public class FlywayTests {
     @Test
     public void flywayTest() {
         multiFiles();
-        changeFiles();
+        changeReExecFiles();
+        changeOnlyExecFiles();
         addFiles();
     }
 
@@ -65,43 +68,13 @@ public class FlywayTests {
             LOG.error("init connection exception.", sqlException);
         }
     }
-
-    private void cleanDB(DataSource dataSource, Configuration configuration) {
-        try (Connection connection = dataSource.getConnection();
-             Statement stmt = connection.createStatement()) {
-            String dropSchemaSql = String.format("drop schema if exists %s CASCADE",
-                    configuration.getDefaultSchema());
-            boolean success = stmt.execute(dropSchemaSql);
-            LOG.info("drop schema success?" + success);
-        } catch (SQLException sqlException) {
-            LOG.error("init connection exception.", sqlException);
-        }
-    }
-
-    private long readScriptCount(ClassicConfiguration configuration) {
-        ResourceNameCache resourceNameCache = new ResourceNameCache();
-        LocationScannerCache locationScannerCache = new LocationScannerCache();
-        Scanner<JavaMigration> scanner = new Scanner<>(
-                JavaMigration.class,
-                Arrays.asList(configuration.getLocations()),
-                configuration.getClassLoader(),
-                configuration.getEncoding(),
-                configuration.isDetectEncoding(),
-                false,
-                resourceNameCache,
-                locationScannerCache,
-                configuration.isFailOnMissingLocations());
-        return scanner.getResources(configuration.getSqlMigrationPrefix(),
-                "sql").size();
-    }
-
     /**
      * change exec sql file, then have two record in flyway_schema_history table.
      * one is delete, and the other is SQL.
      */
-    public void changeFiles() {
+    public void changeReExecFiles() {
         String filerPath = "script/1/V1__02_init.sql";
-        changeScriptToUpdate(filerPath);
+        changeScriptToUpdate(filerPath, "john");
         Flyway flyway = init();
         String currentTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(Calendar.getInstance().getTime());
         flyway.migrate();
@@ -109,7 +82,7 @@ public class FlywayTests {
         DataSource dataSource = configuration.getDataSource();
         try (Connection connection = dataSource.getConnection();
              // assert count
-            Statement stmt = connection.createStatement()) {
+             Statement stmt = connection.createStatement()) {
             String query = String.format("select \"type\" from \"%s\".\"%s\" where \"script\"='V1__02_init.sql' and" +
                             "\"installed_on\">'%s' order by \"installed_on\" asc",
                     configuration.getDefaultSchema(),
@@ -123,6 +96,38 @@ public class FlywayTests {
         } catch (SQLException sqlException) {
             LOG.error("init connection exception.", sqlException);
         }
+    }
+
+    public void changeOnlyExecFiles() {
+        String filerPath = "script/1/X1__04_correct.sql";
+        String originText = readScriptText(filerPath);
+        changeScriptToUpdate(filerPath, "bob");
+        Flyway flyway = init();
+        String currentTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(Calendar.getInstance().getTime());
+        try {
+            flyway.migrate();
+        } catch (Exception e) {
+            LOG.error("", e);
+        }
+        ClassicConfiguration configuration = (ClassicConfiguration) flyway.getConfiguration();
+        DataSource dataSource = configuration.getDataSource();
+        try (Connection connection = dataSource.getConnection();
+             // assert count
+             Statement stmt = connection.createStatement()) {
+            String query = String.format("select \"type\" from \"%s\".\"%s\" where \"script\"='X1__04_correct.sql' and" +
+                            "\"installed_on\">'%s' order by \"installed_on\" asc",
+                    configuration.getDefaultSchema(),
+                    configuration.getTable(), currentTime);
+            ResultSet rs = stmt.executeQuery(query);
+            List<String> types = new ArrayList<>(4);
+            while (rs.next()) {
+                types.add(rs.getString(1));
+            }
+            Assertions.assertEquals(String.join(";", types), "");
+        } catch (SQLException sqlException) {
+            LOG.error("init connection exception.", sqlException);
+        }
+        writeScriptText(filerPath, originText);
     }
 
     /**
@@ -151,6 +156,35 @@ public class FlywayTests {
             LOG.error("init connection exception.", sqlException);
         }
     }
+    private void cleanDB(DataSource dataSource, Configuration configuration) {
+        try (Connection connection = dataSource.getConnection();
+             Statement stmt = connection.createStatement()) {
+            String dropSchemaSql = String.format("drop schema if exists %s CASCADE",
+                    configuration.getDefaultSchema());
+            boolean success = stmt.execute(dropSchemaSql);
+            LOG.info("drop schema success?" + success);
+        } catch (SQLException sqlException) {
+            LOG.error("init connection exception.", sqlException);
+        }
+    }
+
+    private long readScriptCount(ClassicConfiguration configuration) {
+        ResourceNameCache resourceNameCache = new ResourceNameCache();
+        LocationScannerCache locationScannerCache = new LocationScannerCache();
+        Scanner<JavaMigration> scanner = new Scanner<>(
+                JavaMigration.class,
+                Arrays.asList(configuration.getLocations()),
+                configuration.getClassLoader(),
+                configuration.getEncoding(),
+                configuration.isDetectEncoding(),
+                false,
+                resourceNameCache,
+                locationScannerCache,
+                configuration.isFailOnMissingLocations());
+        return scanner.getResources(configuration.getSqlMigrationPrefix(),
+                "sql").size() + scanner.getResources(configuration.getOSqlMigrationPrefix(), "sql").size();
+    }
+
 
     private void createDeleteScript(String filerPath, String filePath) {
         String initScriptPath = this.getClass().getClassLoader().getResource(filerPath).getPath();
@@ -169,15 +203,29 @@ public class FlywayTests {
         }
     }
 
-    private void changeScriptToUpdate(String filerPath) {
+    private void changeScriptToUpdate(String filerPath, String name) {
+        writeScriptText(filerPath, String.format("update AUTOEXEC.EMP_INFO set EMP_AGE = %s where EMP_NAME='%s';",
+                new Random().nextInt(1000), name));
+    }
+
+    private String readScriptText(String filerPath) {
+        String initScriptPath = this.getClass().getClassLoader().getResource(filerPath).getPath();
+        try(FileReader reader = new FileReader(initScriptPath)) {
+           return IOUtils.readStringAndClose(reader, -1);
+        } catch (IOException e) {
+            LOG.error("file may not exists", e);
+            return "";
+        }
+    }
+
+    private void writeScriptText(String filerPath, String text) {
         String initScriptPath = this.getClass().getClassLoader().getResource(filerPath).getPath();
         try(FileWriter writer = new FileWriter(initScriptPath)) {
-            writer.write(String.format("update AUTOEXEC.EMP_INFO set EMP_AGE = %s where EMP_NAME='john';", new Random().nextInt(1000)));
+            writer.write(text);
         } catch (IOException e) {
             LOG.error("file may not exists", e);
         }
     }
-
 
     private Flyway init() {
         FluentConfiguration configuration = new FluentConfiguration();
