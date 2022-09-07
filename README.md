@@ -28,7 +28,8 @@ flyway的目标是让数据迁移变得容易。 但， `autoexec script` 的目
 
 ### :lemon: 集成之路
 
-1. maven 项目引 `autoexec script` 入项目。
+1. maven 项目引 `autoexec script` 入项目
+> jar 包交由 github 管理，引入前请阅读[链接](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#installing-a-package)
 
 ```xml
 <properties>

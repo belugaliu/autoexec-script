@@ -38,6 +38,7 @@
         <version.oracle>19.6.0.0</version.oracle>
         <version.lombok>1.18.20</version.lombok>
         <version.lombok-maven-plugin>1.18.20.0</version.lombok-maven-plugin>
+        <github.global.server>github</github.global.server>
     </properties>
     <dependencies>
         <!-- Optional loggers -->
@@ -338,7 +339,13 @@
             </plugin>
         </plugins>
     </build>
-
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub OWNER Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/belugaliu/autoexec_script</url>
+        </repository>
+    </distributionManagement>
     <reporting>
         <plugins>
             <plugin>
