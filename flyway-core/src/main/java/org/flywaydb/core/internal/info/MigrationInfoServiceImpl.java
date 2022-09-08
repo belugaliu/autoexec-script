@@ -74,6 +74,7 @@ public class MigrationInfoServiceImpl implements MigrationInfoService, Operation
 
     /**
      * Refreshes the info about all known migrations from both the classpath and the DB.
+     * modify by liull for multi-script-files in one version. 2022-08-20
      */
     public void refresh() {
         Collection<ResolvedMigration> resolvedMigrations = migrationResolver.resolveMigrations(configuration);
@@ -85,7 +86,7 @@ public class MigrationInfoServiceImpl implements MigrationInfoService, Operation
         context.ignorePatterns = ignorePatterns;
         context.cherryPick = cherryPick;
 
-        Map<Pair<MigrationVersion, MigrationType>, ResolvedMigration> resolvedVersioned = getResolvedVersionedMigrations(resolvedMigrations, context);
+        Map<MigrationUnique, ResolvedMigration> resolvedUnique = getResolvedUniqueMigration(resolvedMigrations, context);
         Map<String, ResolvedMigration> resolvedRepeatable = new TreeMap<>(getResolvedRepeatableMigrations(resolvedMigrations));
 
 
@@ -104,11 +105,13 @@ public class MigrationInfoServiceImpl implements MigrationInfoService, Operation
         List<MigrationInfoImpl> migrationInfos1 = new ArrayList<>();
 
         for (Pair<AppliedMigration, AppliedMigrationAttributes> av : appliedVersioned) {
-            ResolvedMigration resolvedMigration = resolvedVersioned.get(Pair.of(av.getLeft().getVersion(), av.getLeft().getType()));
+            AppliedMigration appliedMigration = av.getLeft();
+            ResolvedMigration resolvedMigration = resolvedUnique.get(MigrationUnique.builder().migrationType(appliedMigration.getType())
+                    .migrationVersion(appliedMigration.getVersion()).script(appliedMigration.getScript()).build());
             migrationInfos1.add(new MigrationInfoImpl(resolvedMigration, av.getLeft(), context, av.getRight().outOfOrder, av.getRight().deleted, av.getRight().undone));
         }
 
-        for (ResolvedMigration prv : getPendingResolvedVersionedMigrations(appliedVersioned, resolvedVersioned, context)) {
+        for (ResolvedMigration prv : getPendingResolvedVersionedMigrations(appliedVersioned, resolvedUnique, context)) {
             migrationInfos1.add(new MigrationInfoImpl(prv, null, context, false, false, false));
         }
 
@@ -161,6 +164,46 @@ public class MigrationInfoServiceImpl implements MigrationInfoService, Operation
         return resolvedVersionedMigrations;
     }
 
+    /**
+     * for multi-script in one version. so use {@link MigrationUnique} as key.
+     * @param resolvedMigrations resolved of script
+     * @param context context
+     * @return migration.
+     * @author liull
+     */
+    private Map<MigrationUnique, ResolvedMigration> getResolvedUniqueMigration(Collection<ResolvedMigration> resolvedMigrations, MigrationInfoContext context) {
+        Map<MigrationUnique, ResolvedMigration> resolvedUniqueMigrations = new TreeMap<>((unique1, unique2) -> {
+            MigrationVersion o1Version = unique1.getMigrationVersion();
+            MigrationVersion o2Version = unique2.getMigrationVersion();
+            if (unique1.getMigrationType() != unique2.getMigrationType()) {
+                return unique1.getMigrationType().toString().compareTo(unique2.getMigrationType().toString());
+            }
+            if (o1Version == null) {
+                return -1;
+            }
+            int vc = o1Version.compareTo(o2Version);
+            if (vc != 0) {
+                return vc;
+            }
+            return unique1.getScript().compareTo(unique2.getScript());
+        });
+        for(ResolvedMigration resolvedMigration: resolvedMigrations) {
+            MigrationVersion version = resolvedMigration.getVersion();
+            if (version != null) {
+                if (version.compareTo(context.lastResolved) > 0) {
+                    context.lastResolved = version;
+                }
+                resolvedUniqueMigrations.put(
+                        MigrationUnique.builder().migrationType(resolvedMigration.getType())
+                                .migrationVersion(resolvedMigration.getVersion())
+                                .script(resolvedMigration.getScript()).build(),
+                        resolvedMigration);
+            }
+        }
+        return resolvedUniqueMigrations;
+    }
+
+
     private Map<String, ResolvedMigration> getResolvedRepeatableMigrations(Collection<ResolvedMigration> resolvedMigrations) {
         Map<String, ResolvedMigration> resolvedRepeatableMigrations = new TreeMap<>();
         for (ResolvedMigration resolvedMigration : resolvedMigrations) {
@@ -187,7 +230,7 @@ public class MigrationInfoServiceImpl implements MigrationInfoService, Operation
                 }
             }
             if (appliedMigration.getType().equals(CoreMigrationType.DELETE) && appliedMigration.isSuccess()) {
-                markAsDeleted(version, appliedVersionedMigrations);
+                markAsDeleted(version, appliedMigration.getScript(), appliedVersionedMigrations);
                 continue;
             }
 
@@ -255,10 +298,11 @@ public class MigrationInfoServiceImpl implements MigrationInfoService, Operation
     }
 
     private Set<ResolvedMigration> getPendingResolvedVersionedMigrations(List<Pair<AppliedMigration, AppliedMigrationAttributes>> appliedVersionedMigrations,
-                                                                         Map<Pair<MigrationVersion, MigrationType>, ResolvedMigration> resolvedVersionedMigrations, MigrationInfoContext context) {
-        Set<ResolvedMigration> pendingResolvedVersionedMigrations = new HashSet<>(resolvedVersionedMigrations.values());
+                                                                         Map<MigrationUnique, ResolvedMigration> resolvedUnique, MigrationInfoContext context) {
+        Set<ResolvedMigration> pendingResolvedVersionedMigrations = new HashSet<>(resolvedUnique.values());
         for (Pair<AppliedMigration, AppliedMigrationAttributes> av : appliedVersionedMigrations) {
-            ResolvedMigration resolvedMigration = resolvedVersionedMigrations.get(Pair.of(av.getLeft().getVersion(), av.getLeft().getType()));
+            AppliedMigration applied = av.getLeft();
+            ResolvedMigration resolvedMigration = resolvedUnique.get(MigrationUnique.builder().migrationVersion(applied.getVersion()).migrationType(applied.getType()).script(applied.getScript()).build());
             if (resolvedMigration != null
                     && !av.getRight().deleted && av.getLeft().getType() != CoreMigrationType.DELETE
 
@@ -352,14 +396,14 @@ public class MigrationInfoServiceImpl implements MigrationInfoService, Operation
 
     /**
      * Marks the latest applied migration with this version as deleted.
-     *
+     * add script same condition. modify by liull.
      * @param version The version.
      * @param appliedVersioned The applied migrations.
      */
-    private void markAsDeleted(MigrationVersion version, List<Pair<AppliedMigration, AppliedMigrationAttributes>> appliedVersioned) {
+    private void markAsDeleted(MigrationVersion version,String script, List<Pair<AppliedMigration, AppliedMigrationAttributes>> appliedVersioned) {
         for (int i = appliedVersioned.size() - 1; i >= 0; i--) {
             Pair<AppliedMigration, AppliedMigrationAttributes> av = appliedVersioned.get(i);
-            if (!av.getLeft().getType().isSynthetic() && version.equals(av.getLeft().getVersion())) {
+            if (!av.getLeft().getType().isSynthetic() && version.equals(av.getLeft().getVersion()) && script.equals(av.getLeft().getScript())) {
                 if (av.getRight().deleted) {
                     throw new FlywayException("Corrupted schema history: multiple delete entries for version " + version,
                                               ErrorCode.DUPLICATE_DELETED_MIGRATION);

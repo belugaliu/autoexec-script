@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.flywaydb.core.internal.resolver.sql;
+package json.resolver;
 
+import json.JsonMigrationType;
 import lombok.CustomLog;
 import org.flywaydb.core.api.CoreMigrationType;
 import org.flywaydb.core.api.ResourceProvider;
@@ -23,11 +24,13 @@ import org.flywaydb.core.api.configuration.Configuration;
 import org.flywaydb.core.api.resolver.MigrationResolver;
 import org.flywaydb.core.api.resolver.ResolvedMigration;
 import org.flywaydb.core.api.resource.LoadableResource;
+import org.flywaydb.core.internal.parser.ParserContext;
 import org.flywaydb.core.internal.parser.ParsingContext;
 import org.flywaydb.core.internal.parser.PlaceholderReplacingReader;
 import org.flywaydb.core.internal.resolver.ChecksumCalculator;
 import org.flywaydb.core.internal.resolver.ResolvedMigrationComparator;
 import org.flywaydb.core.internal.resolver.ResolvedMigrationImpl;
+import org.flywaydb.core.internal.resolver.sql.SqlMigrationExecutor;
 import org.flywaydb.core.internal.resource.ResourceName;
 import org.flywaydb.core.internal.resource.ResourceNameParser;
 import org.flywaydb.core.internal.sqlscript.SqlScript;
@@ -39,52 +42,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Migration resolver for SQL files on the classpath. The SQL files must have names like
- * V1__Description.sql, V1_1__Description.sql, or R__description.sql.
+ * Migration resolver for JSON files on the classpath. The SQL files must have names like
+ * V1__Description.json, V1_1__Description.json, or R__description.json.
  */
 @CustomLog
-public class SqlMigrationResolver implements MigrationResolver {
-    private final SqlScriptExecutorFactory sqlScriptExecutorFactory;
-    private final ResourceProvider resourceProvider;
-    private final SqlScriptFactory sqlScriptFactory;
-    private final Configuration configuration;
-    private final ParsingContext parsingContext;
+public class JsonMigrationResolver implements MigrationResolver {
 
-    public SqlMigrationResolver(ResourceProvider resourceProvider, SqlScriptExecutorFactory sqlScriptExecutorFactory,
-                                SqlScriptFactory sqlScriptFactory, Configuration configuration, ParsingContext parsingContext) {
-        this.sqlScriptExecutorFactory = sqlScriptExecutorFactory;
-        this.resourceProvider = resourceProvider;
-        this.sqlScriptFactory = sqlScriptFactory;
-        this.configuration = configuration;
-        this.parsingContext = parsingContext;
+    private String[] suffixes;
+
+    private String prefix;
+
+    public JsonMigrationResolver(String[] suffixes, String prefix) {
+        this.suffixes = suffixes;
+        this.prefix = prefix;
     }
-
     @Override
     public List<ResolvedMigration> resolveMigrations(Context context) {
         List<ResolvedMigration> migrations = new ArrayList<>();
-        String[] suffixes = configuration.getSqlMigrationSuffixes();
-
-        addMigrations(migrations, configuration.getSqlMigrationPrefix(), suffixes,
-                      false
+        addMigrations(migrations, prefix, suffixes,
+                      false, context);
 
 
-
-                     );
-
-
-
-        addMigrations(migrations, configuration.getRepeatableSqlMigrationPrefix(), suffixes,
-                      true
-
-
-
-                     );
-        addMigrations(migrations, configuration.getOSqlMigrationPrefix(), suffixes, false);
         migrations.sort(new ResolvedMigrationComparator());
         return migrations;
     }
 
-    private LoadableResource[] createPlaceholderReplacingLoadableResources(List<LoadableResource> loadableResources) {
+    private LoadableResource[] createPlaceholderReplacingLoadableResources(List<LoadableResource> loadableResources,
+                                                                           Configuration configuration, ParsingContext parsingContext) {
         List<LoadableResource> list = new ArrayList<>();
 
         for (final LoadableResource loadableResource : loadableResources) {
@@ -113,10 +97,11 @@ public class SqlMigrationResolver implements MigrationResolver {
         return list.toArray(new LoadableResource[0]);
     }
 
-    private Integer getChecksumForLoadableResource(boolean repeatable, List<LoadableResource> loadableResources, ResourceName resourceName) {
+    private Integer getChecksumForLoadableResource(boolean repeatable, List<LoadableResource> loadableResources, ResourceName resourceName,
+                                                   Configuration configuration,ParsingContext parsingContext) {
         if (repeatable && configuration.isPlaceholderReplacement()) {
             parsingContext.updateFilenamePlaceholder(resourceName, configuration);
-            return ChecksumCalculator.calculate(createPlaceholderReplacingLoadableResources(loadableResources));
+            return ChecksumCalculator.calculate(createPlaceholderReplacingLoadableResources(loadableResources, configuration, parsingContext));
         }
 
         return ChecksumCalculator.calculate(loadableResources.toArray(new LoadableResource[0]));
@@ -130,71 +115,36 @@ public class SqlMigrationResolver implements MigrationResolver {
         return null;
     }
 
-    protected void addMigrations(List<ResolvedMigration> migrations, String prefix, String[] suffixes,
-                               boolean repeatable
+    private void addMigrations(List<ResolvedMigration> migrations, String prefix, String[] suffixes,
+                               boolean repeatable, Context context) {
+        Configuration configuration = context.configuration;
+        ResourceProvider resourceProvider = context.resourceProvider;
 
-
-
-                              ) {
         ResourceNameParser resourceNameParser = new ResourceNameParser(configuration);
 
         for (LoadableResource resource : resourceProvider.getResources(prefix, suffixes)) {
             String filename = resource.getFilename();
-            ResourceName resourceName = resourceNameParser.parse(filename);
-            if (!resourceName.isValid() || isSqlCallback(resourceName) || !prefix.equals(resourceName.getPrefix())) {
+            ResourceName resourceName = resourceNameParser.parse(filename, this.suffixes);
+            if (!resourceName.isValid() || !prefix.equals(resourceName.getPrefix())) {
                 continue;
             }
 
-            SqlScript sqlScript = sqlScriptFactory.createSqlScript(resource, configuration.isMixed(), resourceProvider);
-
             List<LoadableResource> resources = new ArrayList<>();
             resources.add(resource);
-
-
-
-
-
-
-
-
-
-
-
-
-            Integer checksum = getChecksumForLoadableResource(repeatable, resources, resourceName);
+            Integer checksum = getChecksumForLoadableResource(repeatable, resources, resourceName, configuration, context.parsingContext);
             Integer equivalentChecksum = getEquivalentChecksumForLoadableResource(repeatable, resources);
-
             migrations.add(new ResolvedMigrationImpl(
                     resourceName.getVersion(),
                     resourceName.getDescription(),
                     resource.getRelativePath(),
                     checksum,
                     equivalentChecksum,
-
-
-
-                            CoreMigrationType.SQL,
+                    JsonMigrationType.JSON,
                     resource.getAbsolutePathOnDisk(),
-                    new SqlMigrationExecutor(sqlScriptExecutorFactory, sqlScript
-
-
-
-
-                                              , false, false
-
-                    )) {
+                    new JsonMigrationExecutor(resource)) {
                 @Override
                 public void validate() {}
             });
         }
-    }
-
-    /**
-     * Checks whether this filename is actually a sql-based callback instead of a regular migration.
-     *
-     * @param result The parsing result to check.
-     */
-    protected static boolean isSqlCallback(ResourceName result) {
-        return Event.fromId(result.getPrefix()) != null;
     }
 }

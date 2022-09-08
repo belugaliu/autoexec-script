@@ -28,7 +28,6 @@ import org.flywaydb.core.internal.parser.ParsingContext;
 import org.flywaydb.core.internal.resolver.java.FixedJavaMigrationResolver;
 import org.flywaydb.core.internal.resolver.java.ScanningJavaMigrationResolver;
 import org.flywaydb.core.internal.resolver.sql.SqlMigrationResolver;
-
 import org.flywaydb.core.internal.sqlscript.SqlScriptExecutorFactory;
 import org.flywaydb.core.internal.sqlscript.SqlScriptFactory;
 
@@ -46,6 +45,8 @@ public class CompositeMigrationResolver implements MigrationResolver {
     private final StatementInterceptor statementInterceptor;
     private List<ResolvedMigration> availableMigrations;
 
+    private final ParsingContext parsingContext;
+
     public CompositeMigrationResolver(ResourceProvider resourceProvider,
                                       ClassProvider<JavaMigration> classProvider,
                                       Configuration configuration,
@@ -58,6 +59,7 @@ public class CompositeMigrationResolver implements MigrationResolver {
         this.sqlScriptFactory = sqlScriptFactory;
         this.sqlScriptExecutorFactory = sqlScriptExecutorFactory;
         this.statementInterceptor = statementInterceptor;
+        this.parsingContext = parsingContext;
 
         if (!configuration.isSkipDefaultResolvers()) {
             migrationResolvers.add(new SqlMigrationResolver(resourceProvider, sqlScriptExecutorFactory, sqlScriptFactory, configuration, parsingContext));
@@ -69,7 +71,6 @@ public class CompositeMigrationResolver implements MigrationResolver {
 
 
         }
-
         migrationResolvers.add(new FixedJavaMigrationResolver(configuration.getJavaMigrations()));
         migrationResolvers.addAll(Arrays.asList(customMigrationResolvers));
     }
@@ -110,7 +111,8 @@ public class CompositeMigrationResolver implements MigrationResolver {
     }
 
     public Collection<ResolvedMigration> resolveMigrations(Configuration configuration) {
-        return resolveMigrations(new Context(configuration, resourceProvider, sqlScriptFactory, sqlScriptExecutorFactory, statementInterceptor));
+        return resolveMigrations(new Context(configuration, resourceProvider, sqlScriptFactory,
+                sqlScriptExecutorFactory, statementInterceptor, parsingContext));
     }
 
     private List<ResolvedMigration> doFindAvailableMigrations(Context context) throws FlywayException {

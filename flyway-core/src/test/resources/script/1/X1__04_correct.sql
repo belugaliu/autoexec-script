@@ -1,0 +1,1 @@
+update AUTOEXEC.EMP_INFO set EMP_AGE = 50 where EMP_NAME='bob';

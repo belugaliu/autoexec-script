@@ -18,6 +18,7 @@ package org.flywaydb.core.internal.schemahistory;
 import lombok.CustomLog;
 import org.flywaydb.core.api.FlywayException;
 import org.flywaydb.core.api.MigrationPattern;
+import org.flywaydb.core.api.MigrationTypeUtil;
 import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.configuration.Configuration;
 import org.flywaydb.core.api.output.CommandResultFactory;
@@ -100,39 +101,33 @@ class JdbcTableSchemaHistory extends SchemaHistory {
 
     @Override
     public void create(final boolean baseline) {
-        connection.lock(table, new Callable<Object>() {
-            @Override
-            public Object call() {
-                int retries = 0;
-                while (!exists()) {
-                    if (retries == 0) {
-                        LOG.info("Creating Schema History table " + table + (baseline ? " with baseline" : "") + " ...");
+        connection.lock(table, () -> {
+            int retries = 0;
+            while (!exists()) {
+                if (retries == 0) {
+                    LOG.info("Creating Schema History table " + table + (baseline ? " with baseline" : "") + " ...");
+                }
+                try {
+                    ExecutionTemplateFactory.createExecutionTemplate(connection.getJdbcConnection(),
+                                                                     database).execute(() -> {
+                                                                         sqlScriptExecutorFactory.createSqlScriptExecutor(connection.getJdbcConnection(), false, false, true)
+                                                                                 .execute(database.getCreateScript(sqlScriptFactory, table, baseline));
+                                                                         LOG.debug("Created Schema History table " + table + (baseline ? " with baseline" : ""));
+                                                                         return null;
+                                                                     });
+                } catch (FlywayException e) {
+                    if (++retries >= 10) {
+                        throw e;
                     }
                     try {
-                        ExecutionTemplateFactory.createExecutionTemplate(connection.getJdbcConnection(),
-                                                                         database).execute(new Callable<Object>() {
-                            @Override
-                            public Object call() {
-                                sqlScriptExecutorFactory.createSqlScriptExecutor(connection.getJdbcConnection(), false, false, true)
-                                        .execute(database.getCreateScript(sqlScriptFactory, table, baseline));
-                                LOG.debug("Created Schema History table " + table + (baseline ? " with baseline" : ""));
-                                return null;
-                            }
-                        });
-                    } catch (FlywayException e) {
-                        if (++retries >= 10) {
-                            throw e;
-                        }
-                        try {
-                            LOG.debug("Schema History table creation failed. Retrying in 1 sec ...");
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e1) {
-                            // Ignore
-                        }
+                        LOG.debug("Schema History table creation failed. Retrying in 1 sec ...");
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e1) {
+                        // Ignore
                     }
                 }
-                return null;
             }
+            return null;
         });
     }
 
@@ -167,9 +162,9 @@ class JdbcTableSchemaHistory extends SchemaHistory {
 
             Object versionObj = versionStr == null ? JdbcNullTypes.StringNull : versionStr;
             Object checksumObj = checksum == null ? JdbcNullTypes.IntegerNull : checksum;
-
+            // for custom script type -- liull
             jdbcTemplate.update(database.getInsertStatement(table),
-                                installedRank, versionObj, description, type.name(), script, checksumObj, database.getInstalledBy(),
+                                installedRank, versionObj, description, MigrationTypeUtil.name(type), script, checksumObj, database.getInstalledBy(),
                                 executionTime, success);
 
             LOG.debug("Schema History table " + table + " successfully updated to reflect changes");
@@ -318,13 +313,14 @@ class JdbcTableSchemaHistory extends SchemaHistory {
         Object checksumObj = checksum == null ? JdbcNullTypes.IntegerNull : checksum;
 
         try {
+            // for custom script type -- liull
             jdbcTemplate.update("UPDATE " + table
                                         + " SET "
                                         + database.quote("description") + "=? , "
                                         + database.quote("type") + "=? , "
                                         + database.quote("checksum") + "=?"
                                         + " WHERE " + database.quote("installed_rank") + "=?",
-                                description, type.name(), checksumObj, appliedMigration.getInstalledRank());
+                                description, MigrationTypeUtil.name(type), checksumObj, appliedMigration.getInstalledRank());
         } catch (SQLException e) {
             throw new FlywaySqlException("Unable to repair Schema History table " + table
                                                  + " for version " + version, e);

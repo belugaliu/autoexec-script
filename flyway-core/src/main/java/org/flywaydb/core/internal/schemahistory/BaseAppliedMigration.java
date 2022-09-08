@@ -17,10 +17,7 @@ package org.flywaydb.core.internal.schemahistory;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import org.flywaydb.core.api.CoreMigrationType;
-import org.flywaydb.core.api.MigrationPattern;
-import org.flywaydb.core.api.MigrationState;
-import org.flywaydb.core.api.MigrationVersion;
+import org.flywaydb.core.api.*;
 import org.flywaydb.core.api.resolver.ResolvedMigration;
 import org.flywaydb.core.extensibility.AppliedMigration;
 import org.flywaydb.core.extensibility.MigrationType;
@@ -57,7 +54,7 @@ public class BaseAppliedMigration implements AppliedMigration {
         this.installedRank = installedRank;
         this.version = version;
         this.description = description;
-        this.type = CoreMigrationType.fromString(type);
+        this.type = MigrationTypeUtil.fromString(type);
         this.script = script;
         this.checksum = checksum;
         this.installedOn = installedOn;

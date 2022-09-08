@@ -523,7 +523,17 @@ public class FluentConfiguration implements Configuration {
         config.setSqlMigrationPrefix(sqlMigrationPrefix);
         return this;
     }
-
+    /**
+     * Sets the file name prefix for only once sql migrations.
+     * SQL migrations have the following file name structure: prefixVERSIONseparatorDESCRIPTIONsuffix,
+     * which using the defaults translates to OV1_1__My_description.sql
+     *
+     * @param oSqlMigrationPrefix The file name prefix for sql migrations (default: OV)
+     */
+    public FluentConfiguration oSqlMigrationPrefix(String oSqlMigrationPrefix) {
+        config.setOSqlMigrationPrefix(oSqlMigrationPrefix);
+        return this;
+    }
     /**
      * Sets the file name prefix for undo SQL migrations. (default: U)
      * Undo SQL migrations are responsible for undoing the effects of the versioned migration with the same version.

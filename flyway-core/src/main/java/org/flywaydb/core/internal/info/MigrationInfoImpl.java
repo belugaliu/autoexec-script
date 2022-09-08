@@ -15,6 +15,7 @@
  */
 package org.flywaydb.core.internal.info;
 
+import com.amazonaws.util.StringUtils;
 import org.flywaydb.core.api.*;
 import org.flywaydb.core.api.resolver.ResolvedMigration;
 import org.flywaydb.core.extensibility.AppliedMigration;
@@ -26,7 +27,6 @@ import org.flywaydb.core.internal.util.AbbreviationUtils;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Objects;
-import java.util.stream.IntStream;
 
 public class MigrationInfoImpl implements MigrationInfo {
     private final ResolvedMigration resolvedMigration;
@@ -281,7 +281,7 @@ public class MigrationInfoImpl implements MigrationInfo {
 
 
         ) {
-            String migrationIdentifier = appliedMigration.getVersion() == null ? appliedMigration.getScript() : "version " + appliedMigration.getVersion();
+            String migrationIdentifier = appliedMigration.getScript();
             if (getVersion() == null || getVersion().compareTo(context.appliedBaseline) > 0) {
                 if (resolvedMigration.getType() != appliedMigration.getType()) {
                     String mismatchMessage = createMismatchMessage("type", migrationIdentifier, appliedMigration.getType(), resolvedMigration.getType());
@@ -373,8 +373,12 @@ public class MigrationInfoImpl implements MigrationInfo {
         if (o.getInstalledRank() != null) {
             return 1;
         }
-
-        return compareVersion(o);
+        // liull:In order to realize the requirement of multiple scripts in one version, the script name comparison is added here.
+        int compare = compareVersion(o);
+        if (compare == 0) {
+            return StringUtils.compare(this.getScript(), o.getScript());
+        }
+        return compare;
     }
 
     @Override
