@@ -35,6 +35,12 @@ import java.text.MessageFormat;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MigrationTypeUtil {
 
+    /**
+     * confirm migrationType implement class is enum.
+     * @param migrationType migrationType
+     * @return true/false
+     * @throws IllegalStateException
+     */
     public static String name(MigrationType migrationType) {
         if (migrationType.getClass().isEnum()) {
             for(Object enumObj: migrationType.getClass().getEnumConstants()) {
@@ -48,6 +54,12 @@ public final class MigrationTypeUtil {
                 migrationType.getClass()));
     }
 
+    /**
+     * by name to confirm MigrationType enum implements.
+     * @param migrationType migrationType
+     * @return MigrationType enum
+     * @throws IllegalStateException
+     */
     public static MigrationType fromString(String migrationType) {
         if ("SPRING_JDBC".equals(migrationType)) {
             return CoreMigrationType.JDBC;

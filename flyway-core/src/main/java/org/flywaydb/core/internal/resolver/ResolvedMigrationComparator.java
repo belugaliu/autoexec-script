@@ -15,6 +15,7 @@
  */
 package org.flywaydb.core.internal.resolver;
 
+import com.amazonaws.util.StringUtils;
 import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.resolver.ResolvedMigration;
 import org.flywaydb.core.extensibility.MigrationType;
@@ -37,6 +38,9 @@ public class ResolvedMigrationComparator implements Comparator<ResolvedMigration
         MigrationType o2MigrationType = o2.getType();
         if (o1MgrationType != o2MigrationType) {
             return o1MgrationType.toString().compareTo(o2MigrationType.toString());
+        }
+        if (o1Version == null && o2Version == null) {
+            return StringUtils.compare(o1.getScript(), o2.getScript());
         }
         if (o1Version == null) {
             return -1;
